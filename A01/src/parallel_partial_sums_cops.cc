@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 
     // TODO
     time_aftersend1 = MPI_Wtime();
-    cout << "[id: " << procId << "] | BROADCAST: " << time_aftersend1 - time_afterinit << endl;
+    cout << "[id: " << procId << "] | READ+BROADCAST: " << time_aftersend1 - time_afterinit << endl;
 
 
     /***********************************
