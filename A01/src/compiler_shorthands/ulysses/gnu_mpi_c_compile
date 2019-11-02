@@ -1,2 +1,3 @@
 #!/bin/bash
+module load openmpi/1.8.3/gnu
 mpicc -O5 -march=native "$@"
