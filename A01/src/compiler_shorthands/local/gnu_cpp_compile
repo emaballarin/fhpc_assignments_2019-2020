@@ -1,0 +1,2 @@
+#!/usr/bin/zsh
+g++ -Ofast -flto -fuse-linker-plugin -march=native "$@"

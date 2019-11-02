@@ -1,0 +1,2 @@
+#!/usr/bin/zsh
+mpiicc -xHost -ipo -Ofast -vec "$@"

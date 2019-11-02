@@ -105,3 +105,6 @@ a.out
 # VirtualEnv configuration files
 .venv
 pip-selfcheck.json
+
+# Local odule cache
+**/__pycache__/

@@ -1,0 +1,19 @@
+if [ $# -eq 1 ] && ( [[ "$1" = "local" ]] || [[ "$1" = "ulysses" ]] )
+    then
+        if [[ "${PWD##*/}" = "src" ]]
+        then
+            cp -R -f ./compiler_shorthands/$1/* ./
+        fi
+    elif [ $# -eq 2 ] && ( [[ "$1" = "delete" ]] && [[ "$2" = "links" ]] )
+    then
+        if [[ "${PWD##*/}" = "src" ]]
+        then
+        rm -f ./gnu_c_compile ./gnu_cpp_compile ./gnu_mpi_c_compile ./gnu_mpi_cpp_compile ./intel_c_compile ./intel_cpp_compile ./intel_mpi_c_compile ./intel_mpi_cpp_compile
+
+        fi
+    else
+    echo ' '
+    echo "Please, run this command in the 'src' directory and provide just one argument: either 'local' or 'ulysses'"
+    echo "If you want to just delete the links, pass as arguments 'delete links'"
+    echo ' '
+fi

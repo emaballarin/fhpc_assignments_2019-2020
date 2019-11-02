@@ -1,0 +1,2 @@
+#!/usr/bin/zsh
+mpic++ -Ofast -flto -fuse-linker-plugin -march=native "$@"

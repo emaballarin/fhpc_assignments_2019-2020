@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 
         // TODO
         time_afterread = MPI_Wtime();
-        cout << "[id: " << procId << "] | MASTER READ: " << time_afterread - time_preread << endl;
+        cout << " [id: " << procId << "] | 0) MASTER READ: " << time_afterread - time_preread << endl;
 
         // ... & Send (to all slaves)
         for (int slave = 1; slave < P; slave++)  // Remember: = 0 is master
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 
     // TODO
     time_aftersend1 = MPI_Wtime();
-    cout << "[id: " << procId << "] | READ+SEND: " << time_aftersend1 - time_afterinit << endl;
+    cout << " [id: " << procId << "] | 1) READ+SEND: " << time_aftersend1 - time_afterinit << endl;
 
 
     /***********************************
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 
     // TODO
     time_afterwork = MPI_Wtime();
-    cout << "[id: " << procId << "] | COMPUTE: " << time_afterwork - time_aftersend1 << endl;
+    cout << " [id: " << procId << "] | 2) COMPUTE: " << time_afterwork - time_aftersend1 << endl;
 
 
     /***********************
@@ -193,7 +193,9 @@ int main(int argc, char* argv[])
         }
 
         lli finalSum{gatheredSum};
-        cout << finalSum << endl;
+        // FIXME:
+        // Suppress output
+        //cout << "<><><>" << finalSum << "<><><>" << endl;
     }
     else  // Slave node(s)
     {
@@ -202,10 +204,10 @@ int main(int argc, char* argv[])
 
     // TODO
     time_aftergather = MPI_Wtime();
-    cout << "[id: " << procId << "] | RECEIVE+SUM: " << time_aftergather - time_afterwork << endl;
+    cout << " [id: " << procId << "] | 3) RECEIVE+SUM: " << time_aftergather - time_afterwork << endl;
 
     cout << "\n"
-         << "--> [id: " << procId << "] | ENTIRE EXECUTION: " << time_aftergather - time_afterinit << " <-- \n"
+         << " [id: " << procId << "] | 4) ENTIRE EXECUTION: " << time_aftergather - time_afterinit << " \n"
          << endl;
 
 

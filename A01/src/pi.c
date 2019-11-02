@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-// if you don ' t have drand48 uncomment the following two lines 10
+// if you don't have drand48 uncomment the following two lines
 // #define drand48 1.0/RANDMAXrand
 // #define srand48 srand
 #define seed 68111  // seed for number generator
@@ -40,9 +40,10 @@ int main(int argc, char** argv)
     double x, y;
     clock_t start_time, end_time;
     double total_time;
-    start_time = clock();
 
     srand48(seed);  // seed the number generator
+
+    start_time = clock();
 
     long long int i;
     for (i = 0; i < N; i++)
@@ -56,9 +57,15 @@ int main(int argc, char** argv)
             M++;
     }
     pi = 4.0 * M / N;  // calculate area
+
     end_time = clock();
-    printf("\n # of trials = %llu , estimate of pi is %1.9f \n", N, pi);
+
+    //printf("\n # of trials = %llu , estimate of pi is %1.9f \n", N, pi);
+    // FIXME
+    // Suppress output
+    //printf("\n <><><> # of trials: %lli; estimate of Pi: %1.9f <><><> \n", N, pi);
     total_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
-    printf("\n # walltime : %10.8f \n", total_time);
+    //printf("\n # walltime : %10.8f \n", total_time);
+    printf("\n [id: 0] | 0) ENTIRE EXECUTION: %10.8f \n", total_time);
     return 0;
 }

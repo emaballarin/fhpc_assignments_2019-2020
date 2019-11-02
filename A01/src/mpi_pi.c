@@ -29,10 +29,9 @@ int main(int argc, char* argv[])
     double pi;
 
     // times
-    double start_time, end_time;
+    double start_time, end_time, aftersample_time;
     int myid, numprocs, proc;
     MPI_Status status;
-    MPI_Request request;
     // master process
     int master = 0;
     int tag = 123;
@@ -43,17 +42,19 @@ int main(int argc, char* argv[])
 
     if (argc <= 1)
     {
-        fprintf(stderr, " Usage : mpi -np n %s number_of_iterations \n", argv[0]);
+        fprintf(stderr, " Usage: mpi -np n %s number_of_iterations \n", argv[0]);
         MPI_Finalize();
         exit(-1);
     }
 
     long long int N = atoll(argv[1]) / numprocs;
-    // take time of processors after initial I/O operation
-    start_time = MPI_Wtime();
 
     // initialize random numbers
     srand48(SEED * (myid + 1));  // seed the number generator
+
+    // take time of processors after initial I/O operation
+    start_time = MPI_Wtime();
+
     local_M = 0;
     long long int i;
     for (i = 0; i < N; i++)
@@ -67,6 +68,9 @@ int main(int argc, char* argv[])
             local_M++;
     }
 
+    aftersample_time = MPI_Wtime();
+    printf(" [id: %i] | 0) SAMPLE+CHECK: %10.8f \n", myid, aftersample_time - start_time);
+
     if (myid == 0)
     {  //if I am the master process gather results from others
         // This is a simple SERIAL operation that does not scale well with number of inputs (iterations)
@@ -79,19 +83,20 @@ int main(int argc, char* argv[])
         }
         pi = 4.0 * M / (N * numprocs);
         end_time = MPI_Wtime();
-        printf("\n # of trials = %llu , estimate of pi is %1.9f \n", N * numprocs, pi);
-        printf("\n # walltime on master processor : %10.8f \n", end_time - start_time);
+        // FIXME
+        // Suppress output
+        //printf("\n <><><> # of trials: %lli; estimate of Pi: %1.9f <><><> \n", N * numprocs, pi);
+        //printf("\n # walltime on processor master: %10.8f \n", end_time - start_time);
+        printf(" [id: %i] | 1) SEND+SUM: %10.8f \n", myid, end_time - aftersample_time);
+        printf("\n [id: %i] | 2) ENTIRE EXECUTION: %10.8f \n\n", myid, end_time - start_time);
     }
     else
-    {  // for all the slave processes send results to the master /
-
-        //    printf ( " Processor %d sending results = %llu to master process \n", myid, local_M) ;
-        //    int time_to_sleep=1*myid;
-        //    sleep(time_to_sleep);
-
+    {
         MPI_Ssend(&local_M, 1, MPI_LONG_LONG, master, tag, MPI_COMM_WORLD);
         end_time = MPI_Wtime();
-        printf("\n # walltime on processor %i : %10.8f \n", myid, end_time - start_time);
+        //printf("\n # walltime on processor %i : %10.8f \n", myid, end_time - start_time);
+        printf(" [id: %i] | 1) SEND+SUM: %10.8f \n", myid, end_time - aftersample_time);
+        printf("\n [id: %i] | 2) ENTIRE EXECUTION: %10.8f \n\n", myid, end_time - start_time);
     }
 
     MPI_Finalize();  // let MPI finish up /

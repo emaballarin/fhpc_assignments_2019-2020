@@ -1,0 +1,2 @@
+#!/usr/bin/zsh
+icc -xHost -ipo -Ofast -vec "$@"

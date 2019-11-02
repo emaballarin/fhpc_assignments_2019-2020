@@ -1,0 +1,3 @@
+#!/bin/bash
+module load openmpi/1.8.3/intel/14.0
+mpiicc -xHost -ipo -Ofast -vec "$@"
