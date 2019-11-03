@@ -60,8 +60,6 @@ int main(int argc, char** argv)
 
     end_time = clock();
 
-    //printf("\n # of trials = %llu , estimate of pi is %1.9f \n", N, pi);
-    // FIXME
     // Suppress output
     //printf("\n <><><> # of trials: %lli; estimate of Pi: %1.9f <><><> \n", N, pi);
     total_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;

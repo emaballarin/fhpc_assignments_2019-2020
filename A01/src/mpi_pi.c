@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
         }
         pi = 4.0 * M / (N * numprocs);
         end_time = MPI_Wtime();
-        // FIXME
+
         // Suppress output
         //printf("\n <><><> # of trials: %lli; estimate of Pi: %1.9f <><><> \n", N * numprocs, pi);
         //printf("\n # walltime on processor master: %10.8f \n", end_time - start_time);

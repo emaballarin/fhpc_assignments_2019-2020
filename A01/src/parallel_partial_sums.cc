@@ -109,7 +109,6 @@ int main(int argc, char* argv[])
     lli localLowBound;
     lli localUpBound;
 
-    // TODO
     time_afterinit = MPI_Wtime();
 
 
@@ -119,15 +118,14 @@ int main(int argc, char* argv[])
 
     if (procId == master)  // Master node
     {
-        // TODO
         time_preread = MPI_Wtime();
 
         // Read...
         N = readN("../data/N.txt");
 
-        // TODO
         time_afterread = MPI_Wtime();
-        cout << " [id: " << procId << "] | 0) MASTER READ: " << time_afterread - time_preread << endl;
+        // Suppress output...
+        //cout << " [id: " << procId << "] | 0) MASTER READ: " << time_afterread - time_preread << endl;
 
         // ... & Send (to all slaves)
         for (int slave = 1; slave < P; slave++)  // Remember: = 0 is master
@@ -141,7 +139,6 @@ int main(int argc, char* argv[])
         MPI_Recv(&N, 1, MPI_LONG_LONG, master, MPItag, MPI_COMM_WORLD, &status);
     }
 
-    // TODO
     time_aftersend1 = MPI_Wtime();
     cout << " [id: " << procId << "] | 1) READ+SEND: " << time_aftersend1 - time_afterinit << endl;
 
@@ -173,7 +170,6 @@ int main(int argc, char* argv[])
         localPartialSum += i;
     }
 
-    // TODO
     time_afterwork = MPI_Wtime();
     cout << " [id: " << procId << "] | 2) COMPUTE: " << time_afterwork - time_aftersend1 << endl;
 
@@ -192,8 +188,8 @@ int main(int argc, char* argv[])
             gatheredSum += localPartialSum;
         }
 
-        lli finalSum{gatheredSum};
-        // FIXME:
+        lli finalSum{gatheredSum};  // Warning -> in fact output is suppressed
+
         // Suppress output
         //cout << "<><><>" << finalSum << "<><><>" << endl;
     }
@@ -202,7 +198,6 @@ int main(int argc, char* argv[])
         MPI_Ssend(&localPartialSum, 1, MPI_LONG_LONG, master, MPItag, MPI_COMM_WORLD);
     }
 
-    // TODO
     time_aftergather = MPI_Wtime();
     cout << " [id: " << procId << "] | 3) RECEIVE+SUM: " << time_aftergather - time_afterwork << endl;
 
