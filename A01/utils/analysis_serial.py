@@ -9,10 +9,9 @@ inprogram_accumulator = 0
 gnutime_accumulator = 0
 
 for i in range(10):
-    acquired = runacq("../src/a.out", 1, 10000000, isserial=True)
+    acquired = runacq("../src/a.out", 1, 100000000, isserial=True)
     inprogram_accumulator += float(acquired[0][0][2])
     gnutime_accumulator += float(acquired[1][1])
-    # print(acquired[0][0][2], acquired[1][1])
 
 print("IN-PROGRAM AVG.:", inprogram_accumulator / rangelen)
 print("GNU TIME AVG.:", gnutime_accumulator / rangelen)
