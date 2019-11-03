@@ -5,7 +5,7 @@ import subprocess as proc
 from subprocess import PIPE
 
 
-def runacq(binary_name, mpiprocs, iterations=None, isintel=False):
+def runacq(binary_name, mpiprocs, iterations=None, isserial=False, isintel=False):
     """ Run and Acquire: scriptable, parametrized, parallel execution of binaries. """
 
     # Preallocation
@@ -34,9 +34,15 @@ def runacq(binary_name, mpiprocs, iterations=None, isintel=False):
     mpiargs = str(mpiprocs)
     par_n = str(iterations)
 
+    if isserial:
+        execlist = [time, "-p", binpath + binary, par_n]
+    else:
+        execlist = [time, "-p", mpirun, "-np", mpiargs, binpath + binary, par_n]
+
     # BASH CALL(S):
     ranproc = proc.run(
-        [time, "-p", mpirun, "-np", mpiargs, binpath + binary, par_n],
+        # [time, "-p", mpirun, "-np", mpiargs, binpath + binary, par_n],
+        execlist,
         stdout=PIPE,
         stderr=PIPE,
         check=True,
@@ -86,12 +92,12 @@ def runacq(binary_name, mpiprocs, iterations=None, isintel=False):
     #       For each line:
     #                      [0] : the processor Id
     #                      [1] : the ordinal for execution ordering
-    #                      [0] : the time for such operation
+    #                      [2] : the time for such operation
 
     # NOTE: gnutimes is a list:
     #                      [0] : "real" time (a.k.a. actual measured walltime)
     #                      [1] : "user" time (a.k.a. sum of actual process times)
-    #                      [0] : "sys" time
+    #                      [2] : "sys" time
 
     retlist.append(execution_lol)
     retlist.append(gnutimes)
