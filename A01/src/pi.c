@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2016 Master in High Performance Computing
  * Edit and reuse in accordance to Fair Use policies.
