@@ -9,7 +9,7 @@ in_program_printed_values: int = 3
 
 # Test-specific variables
 proc_list = [2, 4, 8, 16, 20]
-niter_list = [5e7, 1e8, 5e8, 9e8, 1e9, 1.5e9, 2e9, 3e9]
+niter_list = [5e8, 1e9, 3e9, 5e9, 7e9, 9e9, 1e10, 3e10, 5e10]
 
 final_plot_matrix = []
 
