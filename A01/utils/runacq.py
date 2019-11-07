@@ -26,9 +26,9 @@ def runacq(binary_name, mpiprocs, iterations=None, isserial=False, isintel=False
     binpath = "../src/"
     time = "/usr/bin/time"
     if isintel:
-        mpirun = "impirun"
+        mpirun = "../src/impirun"
     else:
-        mpirun = "mpirun"
+        mpirun = "../src/mpirun"
 
     # Deduced variables
     mpiargs = str(mpiprocs)
@@ -40,12 +40,7 @@ def runacq(binary_name, mpiprocs, iterations=None, isserial=False, isintel=False
         execlist = [time, "-p", mpirun, "-np", mpiargs, binpath + binary, par_n]
 
     # BASH CALL(S):
-    ranproc = proc.run(
-        execlist,
-        stdout=PIPE,
-        stderr=PIPE,
-        check=True,
-    )
+    ranproc = proc.run(execlist, stdout=PIPE, stderr=PIPE, check=True)
 
     # ANALYSIS:
 
