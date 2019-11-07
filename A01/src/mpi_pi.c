@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#define NDEBUG  // Mainly to disable eventual asserts
 #define USE MPI
 #define SEED 35791246
 

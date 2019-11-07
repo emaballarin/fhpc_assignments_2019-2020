@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#define NDEBUG  // Mainly to disable eventual asserts
 // if you don't have drand48 uncomment the following two lines
 // #define drand48 1.0/RANDMAXrand
 // #define srand48 srand

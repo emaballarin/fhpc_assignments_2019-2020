@@ -9,9 +9,7 @@ in_program_printed_values: int = 3
 
 # Test-specific variables
 proc_list = [2, 4, 8, 16, 20]
-# proc_list = [2, 3, 4]
 niter = 100000000
-# runacq("../src/a.out", proc, niter, isserial=False)  # for proc in proc_list
 
 # Plotting-specific variables
 outplot_inprogram = []  # To be filled
@@ -47,15 +45,3 @@ for proc in proc_list:
 
 print(outplot_inprogram)
 print(outplot_gnutime)
-
-
-# for i in range(rangelen):
-#     acquired = runacq("../src/a.out", procnum, 100000000, isserial=False)
-#     candidate_max: int = 0
-#     for elem in range(procnum):
-#         if float(acquired[0][2 + 3 * elem][2]) >= float(candidate_max):
-#             candidate_max = float(acquired[0][2 + 3 * elem][2])
-#
-#     inprogram_accumulator += candidate_max
-#
-# print(float(inprogram_accumulator) / float(rangelen))

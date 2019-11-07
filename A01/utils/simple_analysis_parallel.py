@@ -8,6 +8,7 @@ printedvalues: int = 3
 
 # Serial run of `pi.c`
 inprogram_accumulator = 0
+gnutime_accumulator = 0
 
 for i in range(rangelen):
     acquired = runacq("../src/a.out", procnum, 100000000, isserial=False)
@@ -17,5 +18,9 @@ for i in range(rangelen):
             candidate_max = float(acquired[0][2 + 3 * elem][2])
 
     inprogram_accumulator += candidate_max
+    gnutime_accumulator += float(acquired[1][0])
 
 print(float(inprogram_accumulator) / float(rangelen))
+
+print("IN-PROGRAM AVG.:", float(inprogram_accumulator) / float(rangelen))
+print("GNU TIME AVG.:", float(gnutime_accumulator) / float(rangelen))

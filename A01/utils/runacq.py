@@ -41,7 +41,6 @@ def runacq(binary_name, mpiprocs, iterations=None, isserial=False, isintel=False
 
     # BASH CALL(S):
     ranproc = proc.run(
-        # [time, "-p", mpirun, "-np", mpiargs, binpath + binary, par_n],
         execlist,
         stdout=PIPE,
         stderr=PIPE,
