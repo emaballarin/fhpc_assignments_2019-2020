@@ -1,6 +1,6 @@
 #!/bin/bash
-module purge
-module load testing
-module load gnu/6.2.0
+module purge > /dev/null 2>&1
+module load testing > /dev/null 2>&1
+module load gnu/6.2.0 > /dev/null 2>&1
 g++ -Ofast -flto -march=native "$@"
-module purge
+module purge > /dev/null 2>&1
