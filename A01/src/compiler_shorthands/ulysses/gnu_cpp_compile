@@ -1,2 +1,6 @@
 #!/bin/bash
-g++ -O5 -march=native "$@"
+module purge
+module load testing
+module load gnu/6.2.0
+g++ -Ofast -flto -march=native "$@"
+module purge
