@@ -124,8 +124,8 @@ int main(int argc, char* argv[])
         N = readN("../data/N.txt");
 
         time_afterread = MPI_Wtime();
-        // Suppress output...
-        //cout << " [id: " << procId << "] | 0) MASTER READ: " << time_afterread - time_preread << endl;
+
+        cout << " [id: " << procId << "] | 0) MASTER READ: " << time_afterread - time_preread << endl;
 
         // ... & Send (to all slaves)
         for (int slave = 1; slave < P; slave++)  // Remember: = 0 is master
@@ -190,8 +190,8 @@ int main(int argc, char* argv[])
 
         lli finalSum{gatheredSum};  // Warning -> in fact output is suppressed
 
-        // Suppress output
-        //cout << "<><><>" << finalSum << "<><><>" << endl;
+        cout << "<><><>"
+             << "FINAL SUM: " << finalSum << "<><><>" << endl;
     }
     else  // Slave node(s)
     {

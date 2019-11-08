@@ -122,8 +122,8 @@ int main(int argc, char* argv[])
         N = readN("../data/N.txt");
 
         time_afterread = MPI_Wtime();
-        // Suppress output...
-        //cout << " [id: " << procId << "] | 0) MASTER READ: " << time_afterread - time_preread << endl;
+
+        cout << " [id: " << procId << "] | 0) MASTER READ: " << time_afterread - time_preread << endl;
     }
 
     // Everybody
@@ -186,9 +186,10 @@ int main(int argc, char* argv[])
 
     if (procId == master)
     {
-        lli finalSum{gatheredSum};  // Warning -> in fact output is suppressed
-        // Suppress output
-        //cout << finalSum << endl;
+        lli finalSum{gatheredSum};
+
+        cout << "<><><>"
+             << "FINAL SUM: " << finalSum << "<><><>" << endl;
     }
 
 

@@ -8,7 +8,7 @@ if [ $# -eq 1 ] && ( [[ "$1" = "local" ]] || [[ "$1" = "ulysses" ]] )
     then
         if [[ "${PWD##*/}" = "src" ]]
         then
-        rm -f ./gnu_c_compile ./gnu_cpp_compile ./gnu_mpi_c_compile ./gnu_mpi_cpp_compile ./intel_c_compile ./intel_cpp_compile ./intel_mpi_c_compile ./intel_mpi_cpp_compile
+        rm -f ./gnu_c_compile ./gnu_cpp_compile ./gnu_mpi_c_compile ./gnu_mpi_cpp_compile ./intel_c_compile ./intel_cpp_compile ./intel_mpi_c_compile ./intel_mpi_cpp_compile ./mpirun ./impirun
 
         fi
     else
