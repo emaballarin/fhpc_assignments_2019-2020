@@ -3,13 +3,14 @@ if [ $# -eq 1 ] && ( [[ "$1" = "local" ]] || [[ "$1" = "ulysses" ]] )
         if [[ "${PWD##*/}" = "src" ]]
         then
             cp -R -f ./compiler_shorthands/$1/* ./
+            cp -R -f ./compiler_shorthands/$1/* ./microbenchmarks/
         fi
     elif [ $# -eq 2 ] && ( [[ "$1" = "delete" ]] && [[ "$2" = "links" ]] )
     then
         if [[ "${PWD##*/}" = "src" ]]
         then
         rm -f ./gnu_c_compile ./gnu_cpp_compile ./gnu_mpi_c_compile ./gnu_mpi_cpp_compile ./intel_c_compile ./intel_cpp_compile ./intel_mpi_c_compile ./intel_mpi_cpp_compile ./mpirun ./impirun
-
+        rm -f ./microbenchmarks/gnu_c_compile ./microbenchmarks/gnu_cpp_compile ./microbenchmarks/gnu_mpi_c_compile ./microbenchmarks/gnu_mpi_cpp_compile ./microbenchmarks/intel_c_compile ./microbenchmarks/intel_cpp_compile ./microbenchmarks/intel_mpi_c_compile ./microbenchmarks/intel_mpi_cpp_compile ./microbenchmarks/mpirun ./microbenchmarks/impirun
         fi
     else
     echo ' '

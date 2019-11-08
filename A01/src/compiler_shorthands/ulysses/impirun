@@ -1,0 +1,6 @@
+#!/bin/bash
+module purge > /dev/null 2>&1
+module load testing > /dev/null 2>&1
+module load openmpi/2.1.1/intel/17.0/cuda/7.5 > /dev/null 2>&1
+mpirun "$@"
+module purge > /dev/null 2>&1
