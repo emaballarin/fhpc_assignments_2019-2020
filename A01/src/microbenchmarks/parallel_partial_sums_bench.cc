@@ -4,7 +4,7 @@
  * parallel_partial_sums.cc                                                                        *
  *                                                                                                 *
  * An MPI program to compute the sum of natural numbers in the [1-N] interval by using a           *
- * parallel partial sums algorithm. Benchmark-ified version.                                       *
+ * parallel partial sums algorithm. Benchmark-ified version. Not for general use!                  *
  *                                                                                                 *
  * Version: 08/11/2019                                                                             *
  *                                                                                                 *

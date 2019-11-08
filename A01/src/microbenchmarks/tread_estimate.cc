@@ -1,4 +1,9 @@
-// Please, ONE PROCESS ONLY!
+// A simple program to evaluate time required to read from a textfile a Long Long Int.
+// Please, run with ONE PROCESS ONLY at a time!
+//
+// (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>
+// Distribution: MIT License.
+
 #define lli long long int
 #define NDEBUG  // Mainly to disable eventual asserts
 #define USE MPI
@@ -33,10 +38,9 @@ int main(int argc, char* argv[])
 
     lli N;
 
-    //    MPI_Init(&argc, &argv);
     int procId;
     int errCode;
-    int P;  // To-be number of processes
+    int P;
 
     double time_start, time_stop;
 

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+#
+# (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>
+# Distribution: MIT License.
+
 
 from runacq import runacq  # Warning because it's a local file!
 

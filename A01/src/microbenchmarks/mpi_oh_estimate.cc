@@ -3,6 +3,9 @@
 // Usage: perform a timed run with e.g. `/usr/bin/time` (a.k.a. "GNU Time") or bash own `time`;
 //        Any additional "real" or "elapsed" time with respect to 2s should be considered plain MPI overhead,
 //        modulo some (negligible) variable allocation time.
+//
+// (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>
+// Distribution: MIT License.
 
 #include <chrono>
 #include <iostream>

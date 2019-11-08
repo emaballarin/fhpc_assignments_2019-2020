@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+#
+# (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>
+# Distribution: MIT License.
 
 # IMPORTS:
 import subprocess as proc

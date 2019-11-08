@@ -6,7 +6,7 @@
  * An MPI program to compute the sum of natural numbers in the [1-N] interval by using a           *
  * parallel partial sums algorithm.                                                                *
  *                                                                                                 *
- * Version: 01/11/2019                                                                             *
+ * Version: 08/11/2019                                                                             *
  *                                                                                                 *
  * Copyright (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>. All rights reserved.             *
  *                                                                                                 *

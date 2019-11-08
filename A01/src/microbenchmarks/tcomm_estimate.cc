@@ -1,3 +1,8 @@
+// A simple program to evaluate the MPI communication time of MPI_LONG_LONG datatype.
+//
+// (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>
+// Distribution: MIT License.
+
 #define lli long long int
 
 
@@ -14,10 +19,10 @@ int main(int argc, char* argv[])
 {
     int procId;
     int errCode;
-    int P;  // To-be number of processes
+    int P;
     MPI_Status status;
-    int master{0};    // To increase readability in master<->slaves communication
-    int MPItag{628};  // Whatever
+    int master{0};
+    int MPItag{628};
 
     double time_start, time_stop;
 
@@ -27,7 +32,7 @@ int main(int argc, char* argv[])
 
     time_start = MPI_Wtime();
 
-    for (int i = 0; i < 100000000; i++)
+    for (int i = 0; i < 1000000; i++)
     {
         if (procId == master)
         {
@@ -48,7 +53,7 @@ int main(int argc, char* argv[])
 
     MPI_Finalize();
 
-    cout << "Time to send 100000000 Long Long Int (times number of processes): " << (time_stop - time_start) << endl;
+    cout << "Time to send 1000000 Long Long Int (times number of processes): " << (time_stop - time_start) << endl;
 
 
     return 0;

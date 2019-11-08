@@ -1,3 +1,8 @@
+// A simple program to evaluate the time required to compute a Long Long Int summation.
+//
+// (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>
+// Distribution: MIT License.
+
 #include <iostream>
 #include <mpi.h>
 
@@ -9,19 +14,10 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-//    lli* randarray = new lli[1000000000];
-//
-//    // Fill with random numbers an array
-//    srand(time(NULL));
-//    for (lli element = 0; element < 1000000000; element++)
-//    {
-//        lli putvar = static_cast<lli>(rand() % 1000000000);
-//        randarray[element] = putvar;
-//    }
 
     int procId;
     int errCode;
-    int P;  // To-be number of processes
+    int P;
 
     double time_start, time_stop;
 
@@ -34,8 +30,7 @@ int main(int argc, char* argv[])
     time_start = MPI_Wtime();
     for (lli i = 0; i <= 1000000000; i++)
     {
-//        foo += randarray[i];
-          foo += i;
+        foo += i;
     }
     time_stop = MPI_Wtime();
 
