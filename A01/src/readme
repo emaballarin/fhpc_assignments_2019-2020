@@ -1,0 +1,65 @@
+#################################################
+##                                             ##
+## README                                      ##
+## ******                                      ##
+##                                             ##
+## First Assignment - FHPC Course 2019/2020    ##
+##                                             ##
+## Emanuele Ballarin <emanuele@ballarin.cc>    ##
+## DSSC M.Sc. @ (UniTS | UniUD | SISSA | ICTP) ##
+##                                             ##
+#################################################
+
+The directory in which this file is located contains two C++ source code files:
+
+    - sumNumbers_mpi.cc which implements an algorithm for the MPI-parallel sum
+      of the first N natural numbers, by the means of naive point-to-point
+      communication among processes;
+
+    - sumNumbers_mpi_collops.cc which implements instead an algorithm for the
+      MPI-parallel sum of the first N natural numbers, by the means of native
+      MPI collective operations.
+
+Both programs require - once compiled - that a folder ../data/, with respect to
+the binaries location, containing a text file named N.txt, in turn containing
+the ASCII-encoded number N up until to compute the sum of the first natural
+numbers, is present. Such requirements can be changed by the means of editing
+the source code directly, if required.
+
+
+The programs have been tested - successfully - both locally and remotely on the
+Ulysses supercomputing cluster, with the following respective configurations:
+
+LOCAL (GNU):
+Linux Kernel 5.4.0 @ Manjaro Linux (Arch-Linux based), with:
+- g++ (GCC) 9.2.0
+- Open MPI 4.0.2
+
+LOCAL (INTEL):
+Linux Kernel 5.4.0 @ Manjaro Linux (Arch-Linux based), with:
+- icpc (ICC) 19.0.5.281 20190815
+- Intel(R) MPI Library for Linux* OS, Version 2019 Update 5
+  Build 20190806 (id: 7e5a4f84c)
+
+REMOTE (GNU) - a.k.a. "Ulysses"
+Linux Kernel (sissalinux) 2.6 @ Cent-OS based Linux, with:
+- g++ (GCC) 6.2.0
+- Open MPI 2.0.0
+
+In the specific case of "Ulysses", the following procedure has been used in
+order to load the necessary modules (from a bash shell), before both compilation
+and execution:
+
+module load testing
+module load gnu/6.2.0
+
+
+In the respective cases, the following non-default compiler flags have been
+used, and the programs have been compiled and executed on the same computing
+node.
+
+GNU:
+-Ofast -flto -march=native
+
+INTEL:
+-xHost -ipo -Ofast -vec
