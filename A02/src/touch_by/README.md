@@ -1,4 +1,6 @@
-The source files contained in this directory mirror the [original ones](https://github.com/sissa/FHPC_2019-2020/tree/master/Assignements/Assignment02) by [Luca Tornatore](https://github.com/lucatornatore), with very minor bugfixes / usability improvements crowdsourced from [Angela Carraro](https://github.com/angiec96), [Arianna Tasciotti](https://github.com/ariannatasciotti), [Nicola Domenis](https://github.com/nicdom23) and [Emanuele Ballarin](https://github.com/emaballarin).  
+### Licensing Information
+
+The source files contained in this directory mirror the [original ones](https://github.com/sissa/FHPC_2019-2020/tree/master/Assignements/Assignment02) by [Luca Tornatore](https://github.com/lucatornatore), with very minor bugfixes and usability improvements crowdsourced from [Angela Carraro](https://github.com/angiec96), [Arianna Tasciotti](https://github.com/ariannatasciotti), [Nicola Domenis](https://github.com/nicdom23), [Cosimo Moretti](https://github.com/Nosignal666) and [Emanuele Ballarin](https://github.com/emaballarin), and a general reformat of the codebase.  
 
 ---
 
