@@ -26,142 +26,135 @@
 
 
 #if defined(__STDC__)
-#  if (__STDC_VERSION__ >= 199901L)
-#     define _XOPEN_SOURCE 700
-#  endif
+    #if (__STDC_VERSION__ >= 199901L)
+        #define _XOPEN_SOURCE 700
+    #endif
 #endif
-#include <stdlib.h>
+#include <omp.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <omp.h>
 
 
 #define N_default 100
 
 #if defined(_OPENMP)
-#define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
-		  (double)ts.tv_nsec * 1e-9)
+    #define CPU_TIME (clock_gettime(CLOCK_REALTIME, &ts), (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9)
 
-#define CPU_TIME_th (clock_gettime( CLOCK_THREAD_CPUTIME_ID, &myts ), (double)myts.tv_sec + \
-		     (double)myts.tv_nsec * 1e-9)
+    #define CPU_TIME_th \
+        (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &myts), (double)myts.tv_sec + (double)myts.tv_nsec * 1e-9)
 #else
 
-#define CPU_TIME (clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &ts ), (double)ts.tv_sec + \
-		   (double)ts.tv_nsec * 1e-9)
+    #define CPU_TIME (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts), (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9)
 
 #endif
 
 
-
-
-
-int main( int argc, char **argv )
+int main(int argc, char** argv)
 {
 
-  int     N        = N_default;
-  int     nthreads = 1;
-  
-  struct  timespec ts;
-  double *array;
+    int N = N_default;
+    int nthreads = 1;
+
+    struct timespec ts;
+    double* array;
 
 
-
-  /*  -----------------------------------------------------------------------------
-   *   initialize 
+    /*  -----------------------------------------------------------------------------
+   *   initialize
    *  -----------------------------------------------------------------------------
    */
 
-  // check whether some arg has been passed on
-  if ( argc > 1 )
-    N = atoi( *(argv+1) );
+    // check whether some arg has been passed on
+    if (argc > 1)
+        N = atoi(*(argv + 1));
 
 
-  // allocate memory
-  if ( (array = (double*)calloc( (unsigned int)N, sizeof(double) )) == NULL )
+    // allocate memory
+    if ((array = (double*)calloc((unsigned int)N, sizeof(double))) == NULL)
     {
-      printf("I'm sorry, there is not enough memory to host %lu bytes\n", (unsigned int)N * sizeof(double) );
-      return 1;
+        printf("I'm sorry, there is not enough memory to host %lu bytes\n", (unsigned int)N * sizeof(double));
+        return 1;
     }
 
-  // just give notice of what will happen and get the number of threads used
+    // just give notice of what will happen and get the number of threads used
 #ifndef _OPENMP
-  printf("serial summation\n");
+    printf("serial summation\n");
 #else
-#pragma omp parallel
-  {
-#pragma omp master
+    #pragma omp parallel
     {
-      nthreads = omp_get_num_threads();
-      printf("omp summation with %d threads\n", nthreads );
+    #pragma omp master
+        {
+            nthreads = omp_get_num_threads();
+            printf("omp summation with %d threads\n", nthreads);
+        }
     }
-  }
 #endif
 
-  // initialize the array
-  srand48( time(NULL) );
-  for ( int ii = 0; ii < N; ii++ )
-    array[ii] = (double)ii;                                 // choose the initialization you prefer;
+    // initialize the array
+    srand48(time(NULL));
+    for (int ii = 0; ii < N; ii++)
+        array[ii] = (double)ii;  // choose the initialization you prefer;
     //array[ii] = drand48();                                // the first one (with integers) makes it
-                                                            // to check the result
+    // to check the result
 
 
-  /*  -----------------------------------------------------------------------------
+    /*  -----------------------------------------------------------------------------
    *   calculate
    *  -----------------------------------------------------------------------------
    */
 
 
-  double S           = 0;                                   // this will store the summation
-  double th_avg_time = 0;                                   // this will be the average thread runtime
-  double th_min_time = 0;                                   // this will be the min thread runtime.
-							    // contrasting the average and the min
-							    // time taken by the threads, you may
-							    // have an idea of the unbalance.
+    double S = 0;            // this will store the summation
+    double th_avg_time = 0;  // this will be the average thread runtime
+    double th_min_time = 0;  // this will be the min thread runtime.
+                             // contrasting the average and the min
+                             // time taken by the threads, you may
+                             // have an idea of the unbalance.
 
-  double tstart  = CPU_TIME;
-  
+    double tstart = CPU_TIME;
+
 #if !defined(_OPENMP)
-  
-  for ( int ii = 0; ii < N; ii++ )                          // well, you may notice this implementation
-    S += array[ii];                                         // is particularly inefficient anyway
+
+    for (int ii = 0; ii < N; ii++)  // well, you may notice this implementation
+        S += array[ii];             // is particularly inefficient anyway
 
 #else
 
-  
-#pragma omp parallel reduction(+:th_avg_time) \
-  reduction(min:th_min_time)                                // in this region there are 2 different
-  {                                                         // reductions: the one of runtime, which
-    struct  timespec myts;                                  // happens in the whole parallel region;
-    double mystart = CPU_TIME_th;                           // and the one on S, which takes place  
-#pragma omp for reduction(+:S)                              // in the for loop.                     
-    for ( int ii = 0; ii < N; ii++ )
-      S += array[ii];
 
-    double mytime = CPU_TIME_th - mystart; 
-    th_avg_time += mytime;
-    th_min_time  = (mytime < th_min_time)? mytime : th_min_time;
-    
-  }
+    #pragma omp parallel reduction(+:th_avg_time) \
+  reduction(min:th_min_time)                                // in this region there are 2 different
+    {                                  // reductions: the one of runtime, which
+        struct timespec myts;          // happens in the whole parallel region;
+        double mystart = CPU_TIME_th;  // and the one on S, which takes place
+    #pragma omp for reduction(+ : S)  // in the for loop.
+        for (int ii = 0; ii < N; ii++)
+            S += array[ii];
+
+        double mytime = CPU_TIME_th - mystart;
+        th_avg_time += mytime;
+        th_min_time = (mytime < th_min_time) ? mytime : th_min_time;
+    }
 
 #endif
 
-  double tend = CPU_TIME;                                   // this timer is CLOCK_REALTIME if OpenMP
-							    // is active; CLOCK_PROCESS_CPU_TIME_ID
-							    // otherwise. That is because the latter
-							    // would accounts for the whole cpu time
-							    // used by the threads under OpenMP.
+    double tend = CPU_TIME;  // this timer is CLOCK_REALTIME if OpenMP
+                             // is active; CLOCK_PROCESS_CPU_TIME_ID
+                             // otherwise. That is because the latter
+                             // would accounts for the whole cpu time
+                             // used by the threads under OpenMP.
 
-  /*  -----------------------------------------------------------------------------
+    /*  -----------------------------------------------------------------------------
    *   finalize
    *  -----------------------------------------------------------------------------
    */
 
-printf("Sum is %g, process took %g of wall-clock time\n\n"
-       "<%g> sec of avg thread-time\n"
-       "<%g> sec of min thread-time\n",
-       S, tend - tstart, th_avg_time/nthreads, th_min_time );
-  
-  free( array );
-  return 0;
+    printf("Sum is %g, process took %g of wall-clock time\n\n"
+           "<%g> sec of avg thread-time\n"
+           "<%g> sec of min thread-time\n",
+           S, tend - tstart, th_avg_time / nthreads, th_min_time);
+
+    free(array);
+    return 0;
 }
