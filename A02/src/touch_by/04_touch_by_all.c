@@ -67,7 +67,7 @@ int main( int argc, char **argv )
   int     nthreads = 1;
   
   struct  timespec ts;
-  double *array;;
+  double *array;
 
   /*  -----------------------------------------------------------------------------
    *   initialize 
@@ -78,22 +78,32 @@ int main( int argc, char **argv )
   if ( argc > 1 )
     N = atoi( *(argv+1) );
 
-  if ( (array = (double*)calloc( N, sizeof(double) )) == NULL )
-    printf("I'm sorry, on some thread there is not"
+  if ( (array = (double*)calloc( (unsigned int)N, sizeof(double) )) == NULL )
+  {printf("I'm sorry, on some thread there is not"
 	   "enough memory to host %lu bytes\n",
-	   N * sizeof(double) ); return 1;
+	   (unsigned int)N * sizeof(double) ); return 1;}
   
   // just give notice of what will happen and get the number of threads used
 #pragma omp parallel
   {
 #pragma omp master
     {
+    #ifdef _OPENMP
       nthreads = omp_get_num_threads();
-      printf("omp summation with %d threads\n", nthreads );
+      printf("omp ");
+    #else
+      nthreads = 1;
+      printf("Running not linked to OpenMP: not getting thread info.\nThread nr. set to 1\n");
+    #endif
+      printf("summation with %d threads\n", nthreads );
     }
+    #ifdef _OPENMP
     int me = omp_get_thread_num();
+    #endif
 #pragma omp critical
-    printf("thread %2d is running on core %2d\n", me, get_cpu_id() );    
+    #ifdef _OPENMP
+    printf("thread %2d is running on core %2d\n", me, get_cpu_id() );
+    #endif    
   }
 
 
@@ -201,7 +211,7 @@ int read_proc__self_stat( int field, int *ret_val )
   char   *line = NULL;
   int     ret;
   size_t  len;
-  ret = getline( &line, &len, file );
+  ret = (int)getline( &line, &len, file );
   fclose(file);
 
   if( ret == -1 )
