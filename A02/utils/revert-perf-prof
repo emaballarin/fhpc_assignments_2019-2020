@@ -1,0 +1,12 @@
+#!/bin/bash
+echo " "
+sudo echo "Preparing kernel for Perf profiling..."
+echo " "
+sudo bash -c 'echo "1" > /proc/sys/kernel/yama/ptrace_scope'
+sudo bash -c 'echo "2" > /proc/sys/kernel/perf_event_paranoid'
+sudo bash -c 'echo "0" > /proc/sys/kernel/kptr_restrict'
+sudo bash -c 'echo "0" > /proc/sys/kernel/nmi_watchdog'
+echo " "
+echo "DONE!"
+echo " "
+echo " "
