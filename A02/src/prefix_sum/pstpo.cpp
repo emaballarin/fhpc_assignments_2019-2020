@@ -7,64 +7,68 @@
  *     Distribution: Apache License
  *     https://raw.githubusercontent.com/emaballarin/fhpc_assignments_2019-2020/master/LICENSE
  *
- * PREFACE:
- * I surely was not one among the first to tackle this exercise for the
- * assignment, and literally everyone I knew (and who did it already) was talking
- * about how their implementation "Well, it works... but it doesn't scale better
- * than the serial version". For that reason, without further ado, I decided to
- * ask an oldtime friend for help. That friend, however, is said to be nothing
- * less than the root of all evils. They told me not to go down such road.
- * I did it nonetheless. As for now, it seems to work pretty well... ¯\_(ツ)_/¯
  *
  * COMPILE LINE (Intel PSXE 2019.5): icpc -std=c++17 -Ofast -fno-alias -xCORE-AVX2 -xHost -fma -use-intel-optimized-headers -qopt-subscript-in-range -falign-loops -qopenmp -parallel -pthread -funroll-loops -ipo -vec
  * COMPILE LINE (GNU g++ 9.2, base): g++ -Ofast -flto -faggressive-loop-optimizations -fassociative-math -fcode-hoisting -fcombine-stack-adjustments -fdelayed-branch -fdelete-null-pointer-checks -fexpensive-optimizations -ffast-math -ffinite-math-only -fguess-branch-probability -fhoist-adjacent-loads -fif-conversion -fif-conversion2 -findirect-inlining -fipa-pure-const -fivopts -flive-range-shrinkage -flra-remat -flto -fmerge-all-constants -fmerge-constants -fmodulo-sched -fmodulo-sched-allow-regmoves -fmove-loop-invariants -foptimize-sibling-calls -foptimize-strlen -fpartial-inlining -fpeel-loops -fpeephole -fpeephole2 -fpredictive-commoning -fprefetch-loop-arrays -freciprocal-math -free -frename-registers -freorder-blocks -freorder-blocks-and-partition -freorder-functions -frerun-cse-after-loop -freschedule-modulo-scheduled-loops -fsched2-use-superblocks -fsched-critical-path-heuristic -fsched-dep-count-heuristic -fsched-group-heuristic -fsched-interblock -fsched-last-insn-heuristic -fsched-pressure -fsched-rank-heuristic -fsched-spec -fsched-spec-insn-heuristic -fsched-spec-load -fsched-spec-load-dangerous -fschedule-fusion -fschedule-insns -fschedule-insns2 -fselective-scheduling -fsel-sched-pipelining -fsel-sched-pipelining-outer-loops -fsplit-loops -fthread-jumps -ftree-bit-ccp -ftree-builtin-call-dce -ftree-ccp -ftree-coalesce-vars -ftree-dominator-opts -ftree-loop-distribution -ftree-loop-if-convert -ftree-loop-optimize -ftree-loop-vectorize -ftree-partial-pre -ftree-phiprop -ftree-pre -ftree-slp-vectorize -ftree-switch-conversion -ftree-tail-merge -ftree-vectorize -funroll-all-loops -funroll-loops -funsafe-loop-optimizations -funsafe-math-optimizations -funswitch-loops -fuse-linker-plugin -fwhole-program -march=native -fopenmp
  * COMPILE LINE (GNU g++ 9.2, ISL):  g++ -Ofast -flto -faggressive-loop-optimizations -fassociative-math -fcode-hoisting -fcombine-stack-adjustments -fdelayed-branch -fdelete-null-pointer-checks -fexpensive-optimizations -ffast-math -ffinite-math-only -fguess-branch-probability -fhoist-adjacent-loads -fif-conversion -fif-conversion2 -findirect-inlining -fipa-pure-const -fivopts -flive-range-shrinkage -floop-nest-optimize -floop-parallelize-all -flra-remat -flto -fmerge-all-constants -fmerge-constants -fmodulo-sched -fmodulo-sched-allow-regmoves -fmove-loop-invariants -foptimize-sibling-calls -foptimize-strlen -fpartial-inlining -fpeel-loops -fpeephole -fpeephole2 -fpredictive-commoning -fprefetch-loop-arrays -freciprocal-math -free -frename-registers -freorder-blocks -freorder-blocks-and-partition -freorder-functions -frerun-cse-after-loop -freschedule-modulo-scheduled-loops -fsched2-use-superblocks -fsched-critical-path-heuristic -fsched-dep-count-heuristic -fsched-group-heuristic -fsched-interblock -fsched-last-insn-heuristic -fsched-pressure -fsched-rank-heuristic -fsched-spec -fsched-spec-insn-heuristic -fsched-spec-load -fsched-spec-load-dangerous -fschedule-fusion -fschedule-insns -fschedule-insns2 -fselective-scheduling -fsel-sched-pipelining -fsel-sched-pipelining-outer-loops -fsplit-loops -fthread-jumps -ftree-bit-ccp -ftree-builtin-call-dce -ftree-ccp -ftree-coalesce-vars -ftree-dominator-opts -ftree-loop-distribution -ftree-loop-if-convert -ftree-loop-optimize -ftree-loop-vectorize -ftree-partial-pre -ftree-phiprop -ftree-pre -ftree-slp-vectorize -ftree-switch-conversion -ftree-tail-merge -ftree-vectorize -funroll-all-loops -funroll-loops -funsafe-loop-optimizations -funsafe-math-optimizations -funswitch-loops -fuse-linker-plugin -fwhole-program -march=native -fopenmp
  */
 
+
 /*******************************************************************************
  * GLOBAL PRAGMAS:
  *******************************************************************************/
-#pragma once
+#pragma once  // Not needed in single-source files; of good style, though.
+
 
 /*******************************************************************************
- * DEFINES:
+ * "NECESSARY" DEFINES:
  *******************************************************************************/
 #define usi unsigned int            // A shorthand
 #define llu long long unsigned int  // A shorthand
 #define NDEBUG                      // Mainly to disable asserts when "shipping to production"
 
-// Delete all the #define below this line...
-//#define PRINTOUT
-//#define DIAGNOSTIC
-//#define TIMEPROF_SERIAL
-//#define TIMEPROF_PARALLEL
-#define TIMEPROF_TIMECALLS
-//#define __INTEL_COMPILER
-//#define OLDGNU
+
+/*******************************************************************************
+ * "OPTIONAL" DEFINES:
+ *******************************************************************************/
+//#define __INTEL_COMPILER      // Automatically-set when compiling with the Intel C++ Compiler; better not to set it by hand!
+//#define CHEATALLOC            // Gain some more speedup by cheating; memory is initialized in a "touch by all" fashion (unrealistic in real scenarios!)
+//#define DIAGNOSTIC            // Enable diagnostic asserts at the cost of performance; better to leave this off unless needed!
+//#define TIMEPROF_SERIAL       // Enable in-function time profiling for the serial algorithm
+//#define TIMEPROF_PARALLEL     // Enable in-function time profiling for the parallel algorithm
+//#define OLDGNU                // Prevent OpenMP errors coming from the inability to support OMP >= 4.5 (GNU <= 8)
+#define TIMEPROF_TIMECALLS  // Enable in-main time profiling for both the serial and the parallel algorithms, and their comparison; default mode.
+//#define HYPERTHREAD           // Use twice the number of pre-set threads for OpenMP
+
 
 /*******************************************************************************
  * INCLUDES:
  *******************************************************************************/
 #ifdef __INTEL_COMPILER
-    #include <aligned_new>  // Override new() functions with alignment-aware calls (Intel only)
-#endif
+    #include <aligned_new>  // Overload *alloc/new() functions with alignment-aware calls (Intel only)
+#endif                      // ifdef __INTEL_COMPILER
 
-#include <algorithm>
-#include <cassert>
-#include <chrono>
-#include <iostream>
-#include <omp.h>
-
-/*******************************************************************************
- * FUNCTIONS (FORWARD DECLARATIONS, IF NEEDED)
- *******************************************************************************/
+#include <cassert>   // Asserts
+#include <chrono>    // Time profiling
+#include <iostream>  // Output
+#include <omp.h>     // OpenMP
 
 
 /*******************************************************************************
  * FUNCTIONS
  *******************************************************************************/
+
+/*
+ * A type-templated, serial, inline, "somehow naive" prefix sum implementation
+ */
 template<typename T>
+#ifndef CHEATALLOC
 inline void scansum_serial(const T* const input_ptr, const std::size_t input_len, T* const output_ptr)
+#endif  // ifndef CHEATALLOC
+#ifdef CHEATALLOC
+  // We need to give up on pointer const-ification if we want to allocate here!
+  inline void scansum_serial(T* input_ptr, const std::size_t input_len, T* const output_ptr)
+#endif  // ifdef CHEATALLOC
 {
 #ifdef DIAGNOSTIC  // Check that the raw-pointer array is not NULL
     assert(static_cast<int>((input_ptr != nullptr) && (input_ptr != NULL)));
@@ -74,13 +78,21 @@ inline void scansum_serial(const T* const input_ptr, const std::size_t input_len
     auto t_start = std::chrono::high_resolution_clock::now();
 #endif  // ifdef TIMEPROF_SERIAL
 
+#ifdef CHEATALLOC
+    #pragma parallel  // Intel-specific option: try your best to parallelize/vectorize (still serially)!
+    for (llu i{0}; i < input_len; ++i)
+    {
+        input_ptr[i] = static_cast<float>(i);
+    }
+#endif  // ifdef CHEATALLOC
+
     output_ptr[0] = input_ptr[0];
-    for (llu i{1}; i < input_len; ++i)  // Already vectorized by the compiler at most (-Ofast -vec)
+    for (llu i{1}; i < input_len; ++i)  // Already vectorized by the compiler (Intel: -Ofast -vec)
     {
         output_ptr[i] = output_ptr[i - 1] + input_ptr[i];
     }
 
-#ifdef TIMEPROF_SERIAL  // Function execution time
+#ifdef TIMEPROF_SERIAL
     auto t_stop = std::chrono::high_resolution_clock::now();
     std::cout << "\n*********************************************************************************************\n"
               << "CALLED: scansum_serial for " << input_len << " elements.\n"
@@ -88,13 +100,22 @@ inline void scansum_serial(const T* const input_ptr, const std::size_t input_len
               << std::chrono::duration_cast<std::chrono::microseconds>(t_stop - t_start).count()
               << "\n*********************************************************************************************\n"
               << std::endl;
-#endif  // ifdef TIMEPROF_SERIAL (Function execution time)
+#endif  // ifdef TIMEPROF_SERIAL
 };
 
-
+/*
+ * A type-templated, parallel, inline prefix sum implementation. After [Blelloch 90] and [Blelloch 93].
+ */
 template<typename T>
+#ifndef CHEATALLOC
 inline auto scansum_blelloch90(const T* const input_ptr, const std::size_t input_len, T* const output_ptr,
                                const unsigned int nthreads)
+#endif  // ifndef CHEATALLOC
+#ifdef CHEATALLOC
+  // We need to give up on pointer const-ification if we want to allocate here!
+  inline auto scansum_blelloch90(T* input_ptr, const std::size_t input_len, T* const output_ptr,
+                                 const unsigned int nthreads)
+#endif  // ifdef CHEATALLOC
 {
 #ifdef DIAGNOSTIC  // Check that the number of threads for the algorithm is nonzero
     assert(static_cast<int>(nthreads != 0));
@@ -124,12 +145,12 @@ inline auto scansum_blelloch90(const T* const input_ptr, const std::size_t input
 #ifndef OLDGNU
     #pragma omp parallel default(none) \
       shared(input_ptr, output_ptr, partition_len, remainder, sum_offsets, prefix_offsets, nthreads)
-#endif
-#ifdef OLDGNU  // g++ < 8 requires this peculiar pragma call...
+#endif         // ifndef OLDGNU
+#ifdef OLDGNU  // g++ version <= 8 requires this peculiar pragma call...
     #pragma omp parallel default(none) shared(partition_len, remainder, sum_offsets, prefix_offsets)
-#endif
+#endif  // ifdef OLDGNU
     {
-        // SERVICE VARIABLES
+        // SERVICE VARIABLES:
         auto threadlocal_threadnum = omp_get_thread_num();
         bool threadlocal_addone{(threadlocal_threadnum < remainder)};
         auto threadlocal_partlen = partition_len + threadlocal_addone;
@@ -158,8 +179,8 @@ inline auto scansum_blelloch90(const T* const input_ptr, const std::size_t input
          * PASS 3: Offset addition
          */
 
-#pragma parallel
-        for (llu i{0}; i < threadlocal_partlen; ++i)  // Already vectorized by the compiler at most (-Ofast -vec)
+#pragma parallel  // Intel-specific option: try your best to parallelize/vectorize (still serially)!
+        for (llu i{0}; i < threadlocal_partlen; ++i)
         {
             (output_ptr + threadlocal_ptradd)[i] +=
               (prefix_offsets[threadlocal_threadnum - 1]) * (threadlocal_threadnum != nthreads);
@@ -187,16 +208,18 @@ inline auto scansum_blelloch90(const T* const input_ptr, const std::size_t input
 
 int main()
 {
-    constexpr llu testnr = 500000000;
+    constexpr llu testnr = 4000000000;
 
 
     auto known_array_ptr = new float[testnr];
     auto test_array = new float[testnr];
 
+#ifndef CHEATALLOC
     for (auto i{0}; i < testnr; ++i)
     {
         known_array_ptr[i] = static_cast<float>(i);
     }
+#endif  // ifndef CHEATALLOC
 
 #ifdef TIMEPROF_TIMECALLS
 
@@ -223,15 +246,17 @@ int main()
     auto known_array_ptr_2 = new float[testnr];
     auto test_array_2 = new float[testnr];
 
+    #ifndef CHEATALLOC
     for (auto i{0}; i < testnr; ++i)
     {
         known_array_ptr_2[i] = static_cast<float>(i);
     }
+    #endif  // ifndef CHEATALLOC
 
     #ifdef HYPERTHREAD
     test_threads_nr *= 2;
     omp_set_num_threads(test_threads_nr);
-    #endif
+    #endif  // ifdef HYPERTHREAD
 
     auto t_start_parallel = std::chrono::high_resolution_clock::now();
     scansum_blelloch90(known_array_ptr_2, testnr, test_array_2, test_threads_nr);
@@ -250,7 +275,7 @@ int main()
     std::cout << "SPEEDUP:" << speedup << std::endl;
     std::cout << "THREADS:" << test_threads_nr << std::endl;
 
-#endif
+#endif  // ifdef TIMEPROF_TIMECALLS
 
 #ifndef TIMEPROF_TIMECALLS
     scansum_blelloch90(known_array_ptr, testnr, test_array, 4);
@@ -259,5 +284,5 @@ int main()
 
     delete[] known_array_ptr;
     delete[] test_array;
-#endif
+#endif  // ifndef TIMEPROF_TIMECALLS
 }
