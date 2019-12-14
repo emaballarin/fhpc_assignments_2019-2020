@@ -45,7 +45,7 @@
  * INCLUDES:
  *******************************************************************************/
 #ifdef __INTEL_COMPILER
-    #include <aligned_new>  // Overload *alloc/new() functions with alignment-aware calls (Intel only)
+    #include <aligned_new>  // Overload *alloc/new() functions with alignment-aware calls optimized for specific architecture (Intel only; uses the same detection mechanism as -xHost)
 #endif                      // ifdef __INTEL_COMPILER
 
 #include <cassert>   // Asserts
