@@ -162,10 +162,16 @@ int main(int argc, char** argv)
     //            "<%g> sec of min thread-time\n",
     //            S, tend - tstart, th_avg_time / nthreads, th_min_time);
 
+//     printf("%g SUM\n\n\n"
+//            "%g WALL\n"
+//            "%g THAVG\n"
+//            "%g THMIN\n",
+//            S, tend - tstart, th_avg_time / nthreads, th_min_time);
+
     printf("%g SUM\n\n\n"
-           "%g WALL\n"
-           "%g THAVG\n"
-           "%g THMIN\n",
+           "%g\n"   // Wall time
+           "%g\n"   // Average thread time (single thread avg)
+           "%g\n",  // Min thread time (single thread min)
            S, tend - tstart, th_avg_time / nthreads, th_min_time);
 
     free(array);

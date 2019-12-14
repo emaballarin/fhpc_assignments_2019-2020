@@ -146,8 +146,12 @@ int main(int argc, char** argv)
    */
 
     // printf("Sum is %g, process took <%g> of wall-clock time\n", S, tend - tstart);
+//     printf("%g SUM\n\n\n"
+//            "%g WALL\n",
+//            S, tend - tstart);
+
     printf("%g SUM\n\n\n"
-           "%g WALL\n",
+           "%g\n",
            S, tend - tstart);
 
 

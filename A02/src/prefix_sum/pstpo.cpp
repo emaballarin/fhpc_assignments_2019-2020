@@ -3,7 +3,7 @@
  ** PStPO: Prefix Sum through Premature Optimization **
  ******************************************************
  *
- * (C) 2019 - Emanuele Ballarin <emanuele@ballarin.cc>
+ * (C) 2019-* Emanuele Ballarin <emanuele@ballarin.cc>
  *     Distribution: Apache License
  *     https://raw.githubusercontent.com/emaballarin/fhpc_assignments_2019-2020/master/LICENSE
  *
@@ -291,9 +291,14 @@ int main()
 
         auto speedup = ((double)t_diff_serial / (double)t_diff_parallel);
 
-        std::cout << "SERIAL TIME:" << t_diff_serial << std::endl;
+        // std::cout << "SERIAL TIME:" << t_diff_serial << std::endl;
+        // std::cout << "SPEEDUP:" << speedup << std::endl;
+        // std::cout << "THREADS:" << test_threads_nr << std::endl;
+
         std::cout << "SPEEDUP:" << speedup << std::endl;
-        std::cout << "THREADS:" << test_threads_nr << std::endl;
+        std::cout << "THREADS:" << test_threads_nr << "\n\n\n" << std::endl;
+        std::cout << t_diff_serial << std::endl;
+        std::cout << t_diff_parallel << std::endl;
 
 #endif  // ifdef TIMEPROF_TIMECALLS
 
@@ -307,6 +312,6 @@ int main()
 #endif  // ifndef TIMEPROF_TIMECALLS
 
 #ifdef LIKEADOLPHIN
-        std::cout << "\nSo long and thanks for all the fish!\n"
+        std::cout << "\nSo long and thanks for all the fish!\n";
 #endif  // ifdef LIKEADOLPHIN
     }
