@@ -305,8 +305,8 @@ int main()
         delete[] known_array_ptr;
         delete[] test_array;
 #endif  // ifndef TIMEPROF_TIMECALLS
-        
+
 #ifdef LIKEADOLPHIN
         std::cout << "\nSo long and thanks for all the fish!\n"
-#endif  // ifdef LIKEADOLPHIN 
+#endif  // ifdef LIKEADOLPHIN
     }

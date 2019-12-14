@@ -24,12 +24,19 @@
  │                                                                            │
  * ────────────────────────────────────────────────────────────────────────── */
 
+/*
+ * COMPILE LINE (icc): -Ofast -fno-alias -xCORE-AVX2 -xHost -fma -use-intel-optimized-headers -falign-loops -qopenmp -parallel -pthread -ipo -vec
+ */
+
 
 #if defined(__STDC__)
     #if (__STDC_VERSION__ >= 199901L)
         #define _XOPEN_SOURCE 700
     #endif
 #endif
+
+#define _GNU_SOURCE
+
 #include <omp.h>
 #include <sched.h>
 #include <stdio.h>
@@ -138,7 +145,10 @@ int main(int argc, char** argv)
    *  -----------------------------------------------------------------------------
    */
 
-    printf("Sum is %g, process took <%g> of wall-clock time\n", S, tend - tstart);
+    // printf("Sum is %g, process took <%g> of wall-clock time\n", S, tend - tstart);
+    printf("%g SUM\n\n\n"
+           "%g WALL\n",
+           S, tend - tstart);
 
 
     free(array);
