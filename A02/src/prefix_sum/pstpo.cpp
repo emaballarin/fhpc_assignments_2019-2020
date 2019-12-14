@@ -44,6 +44,7 @@
 #define TIMEPROF_TIMECALLS  // Enable in-main time profiling for both the serial and the parallel algorithms, and their comparison; default mode.
 //#define HYPERTHREAD           // Use twice the number of pre-set threads for OpenMP
 //#define CONSTEXPR             // Pass the number of elements of the vector over which to perform the prefix sum as a pre-fixed constexpr (enables more aggressive optimizations)
+//#define LIKEADOLPHIN          // What if "the Dolphins" wrote this piece of software?
 
 
 /*******************************************************************************
@@ -214,7 +215,7 @@ inline auto scansum_blelloch90(const T* const input_ptr, const std::size_t input
 int main()
 {
     constexpr llu testnr = 4000000000;
-#endif
+#endif  // ifdef CONSTEXPR
 
 #ifndef CONSTEXPR
     int main(int argc, char** argv)
@@ -228,7 +229,7 @@ int main()
         {
             testnr = 4000000000;
         }
-#endif
+#endif  // ifndef CONSTEXPR
 
         auto known_array_ptr = new numbertype[testnr];
         auto test_array = new numbertype[testnr];
@@ -304,4 +305,8 @@ int main()
         delete[] known_array_ptr;
         delete[] test_array;
 #endif  // ifndef TIMEPROF_TIMECALLS
+        
+#ifdef LIKEADOLPHIN
+        std::cout << "\nSo long and thanks for all the fish!\n"
+#endif  // ifdef LIKEADOLPHIN 
     }

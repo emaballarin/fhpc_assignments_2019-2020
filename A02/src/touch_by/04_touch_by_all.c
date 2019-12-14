@@ -42,7 +42,7 @@
 
 #define N_default 1000
 
-#define CPU_TIME_W (clock_gettime(CLOCK_REALTIME, &ts), (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9)
+#define CPU_TIME (clock_gettime(CLOCK_REALTIME, &ts), (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9)
 
 #define CPU_TIME_T (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &myts), (double)myts.tv_sec + (double)myts.tv_nsec * 1e-9)
 
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     if (argc > 1)
         N = atoi(*(argv + 1));
 
-    if ((array = (double*)calloc((unsigned int)N, sizeof(double))) == NULL)
+    if ((array = (double*)malloc(N * sizeof(double))) == NULL)
     {
         printf("I'm sorry, on some thread there is not"
                "enough memory to host %lu bytes\n",
@@ -124,13 +124,13 @@ int main(int argc, char** argv)
 
 
     double S = 0;  // this will store the summation
-    double tstart = CPU_TIME_W;
+    double tstart = CPU_TIME;
 
 #pragma omp parallel for reduction(+ : S)
     for (int ii = 0; ii < N; ii++)
         S += array[ii];
 
-    double tend = CPU_TIME_W;
+    double tend = CPU_TIME;
 
 
     /*  -----------------------------------------------------------------------------

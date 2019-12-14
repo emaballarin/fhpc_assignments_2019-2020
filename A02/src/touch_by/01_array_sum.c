@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
 
     // allocate memory
-    if ((array = (double*)calloc((unsigned int)N, sizeof(double))) == NULL)
+    if ((array = (double*)malloc(N * sizeof(double))) == NULL)
     {
         printf("I'm sorry, there is not enough memory to host %lu bytes\n", (unsigned int)N * sizeof(double));
         return 1;
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 
     double S = 0;            // this will store the summation
     double th_avg_time = 0;  // this will be the average thread runtime
-    double th_min_time = 99999;  // this will be the min thread runtime.
+    double th_min_time = 1e11;  // this will be the min thread runtime.
                              // contrasting the average and the min
                              // time taken by the threads, you may
                              // have an idea of the unbalance.
