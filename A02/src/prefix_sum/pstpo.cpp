@@ -17,7 +17,7 @@
 /*******************************************************************************
  * GLOBAL PRAGMAS:
  *******************************************************************************/
-#pragma once  // Not needed in single-source files; of good style, though.
+#pragma once  // Not strictly needed in single-source files; of good style, though.
 
 
 /*******************************************************************************
@@ -25,20 +25,25 @@
  *******************************************************************************/
 #define usi unsigned int            // A shorthand
 #define llu long long unsigned int  // A shorthand
-#define NDEBUG                      // Mainly to disable asserts when "shipping to production"
+#define numbertype \
+    float  // The type of the numbers on which to perform the prefix sum (default: float; useful to change it for some more advanced profiling)
+#define timegran \
+    nanoseconds  // Default time unit for duration casts (in the form: $prefix$seconds; i.e. seconds | milliseconds | nanoseconds | ...)
+#define NDEBUG  // Mainly to disable asserts when "shipping to production"
 
 
 /*******************************************************************************
  * "OPTIONAL" DEFINES:
  *******************************************************************************/
 //#define __INTEL_COMPILER      // Automatically-set when compiling with the Intel C++ Compiler; better not to set it by hand!
-//#define CHEATALLOC            // Gain some more speedup by cheating; memory is initialized in a "touch by all" fashion (unrealistic in real scenarios!)
+//#define CHEATALLOC            // Gain some more speedup by cheating; memory is initialized in a "touch by all" fashion (unrealistic in real-world scenarios!)
 //#define DIAGNOSTIC            // Enable diagnostic asserts at the cost of performance; better to leave this off unless needed!
 //#define TIMEPROF_SERIAL       // Enable in-function time profiling for the serial algorithm
 //#define TIMEPROF_PARALLEL     // Enable in-function time profiling for the parallel algorithm
 //#define OLDGNU                // Prevent OpenMP errors coming from the inability to support OMP >= 4.5 (GNU <= 8)
 #define TIMEPROF_TIMECALLS  // Enable in-main time profiling for both the serial and the parallel algorithms, and their comparison; default mode.
 //#define HYPERTHREAD           // Use twice the number of pre-set threads for OpenMP
+//#define CONSTEXPR             // Pass the number of elements of the vector over which to perform the prefix sum as a pre-fixed constexpr (enables more aggressive optimizations)
 
 
 /*******************************************************************************
@@ -59,7 +64,7 @@
  *******************************************************************************/
 
 /*
- * A type-templated, serial, inline, "somehow naive" prefix sum implementation
+ * A type-templated, serial, inline, prefix sum implementation
  */
 template<typename T>
 #ifndef CHEATALLOC
@@ -82,7 +87,7 @@ inline void scansum_serial(const T* const input_ptr, const std::size_t input_len
     #pragma parallel  // Intel-specific option: try your best to parallelize/vectorize (still serially)!
     for (llu i{0}; i < input_len; ++i)
     {
-        input_ptr[i] = static_cast<float>(i);
+        input_ptr[i] = static_cast<numbertype>(i);
     }
 #endif  // ifdef CHEATALLOC
 
@@ -96,8 +101,7 @@ inline void scansum_serial(const T* const input_ptr, const std::size_t input_len
     auto t_stop = std::chrono::high_resolution_clock::now();
     std::cout << "\n*********************************************************************************************\n"
               << "CALLED: scansum_serial for " << input_len << " elements.\n"
-              << "Elapsed time (mu_s): "
-              << std::chrono::duration_cast<std::chrono::microseconds>(t_stop - t_start).count()
+              << "Elapsed time (mu_s): " << std::chrono::duration_cast<std::chrono::timegran>(t_stop - t_start).count()
               << "\n*********************************************************************************************\n"
               << std::endl;
 #endif  // ifdef TIMEPROF_SERIAL
@@ -192,7 +196,7 @@ inline auto scansum_blelloch90(const T* const input_ptr, const std::size_t input
     std::cout << "\n*********************************************************************************************\n"
               << "CALLED: scansum_blelloch90 for " << input_len << " elements and over" << nthreads << " threads\n"
               << "Elapsed time (mu_s): "
-              << std::chrono::duration_cast<std::chrono::microseconds>(t_stop_p - t_start_p).count()
+              << std::chrono::duration_cast<std::chrono::timegran>(t_stop_p - t_start_p).count()
               << "\n*********************************************************************************************\n"
               << std::endl;
 #endif  // ifdef TIMEPROF_PARALLEL (Function execution time)
@@ -206,83 +210,98 @@ inline auto scansum_blelloch90(const T* const input_ptr, const std::size_t input
  * MAIN DRIVER
  *******************************************************************************/
 
+#ifdef CONSTEXPR
 int main()
 {
     constexpr llu testnr = 4000000000;
+#endif
 
+#ifndef CONSTEXPR
+    int main(int argc, char** argv)
+    {
+        llu testnr;
+        if (argc == 2)
+        {
+            testnr = atoll(*(argv + 1));
+        }
+        else
+        {
+            testnr = 4000000000;
+        }
+#endif
 
-    auto known_array_ptr = new float[testnr];
-    auto test_array = new float[testnr];
+        auto known_array_ptr = new numbertype[testnr];
+        auto test_array = new numbertype[testnr];
 
 #ifndef CHEATALLOC
-    for (auto i{0}; i < testnr; ++i)
-    {
-        known_array_ptr[i] = static_cast<float>(i);
-    }
+        for (auto i{0}; i < testnr; ++i)
+        {
+            known_array_ptr[i] = static_cast<numbertype>(i);
+        }
 #endif  // ifndef CHEATALLOC
 
 #ifdef TIMEPROF_TIMECALLS
 
-    int test_threads_nr;
+        int test_threads_nr;
     #pragma omp parallel
-    {
-    #pragma omp master
         {
-            test_threads_nr = static_cast<int>(omp_get_num_threads());
+    #pragma omp master
+            {
+                test_threads_nr = static_cast<int>(omp_get_num_threads());
+            }
         }
-    }
 
-    auto t_start_serial = std::chrono::high_resolution_clock::now();
-    scansum_serial(known_array_ptr, testnr, test_array);
-    auto t_stop_serial = std::chrono::high_resolution_clock::now();
-    auto t_diff_serial = std::chrono::duration_cast<std::chrono::nanoseconds>(t_stop_serial - t_start_serial).count();
+        auto t_start_serial = std::chrono::high_resolution_clock::now();
+        scansum_serial(known_array_ptr, testnr, test_array);
+        auto t_stop_serial = std::chrono::high_resolution_clock::now();
+        auto t_diff_serial = std::chrono::duration_cast<std::chrono::timegran>(t_stop_serial - t_start_serial).count();
 
-    std::cout << test_array[testnr - 1] << std::endl;
+        std::cout << test_array[testnr - 1] << std::endl;
 
-    delete[] known_array_ptr;
-    delete[] test_array;
+        delete[] known_array_ptr;
+        delete[] test_array;
 
 
-    auto known_array_ptr_2 = new float[testnr];
-    auto test_array_2 = new float[testnr];
+        auto known_array_ptr_2 = new numbertype[testnr];
+        auto test_array_2 = new numbertype[testnr];
 
     #ifndef CHEATALLOC
-    for (auto i{0}; i < testnr; ++i)
-    {
-        known_array_ptr_2[i] = static_cast<float>(i);
-    }
+        for (auto i{0}; i < testnr; ++i)
+        {
+            known_array_ptr_2[i] = static_cast<numbertype>(i);
+        }
     #endif  // ifndef CHEATALLOC
 
     #ifdef HYPERTHREAD
-    test_threads_nr *= 2;
-    omp_set_num_threads(test_threads_nr);
+        test_threads_nr *= 2;
+        omp_set_num_threads(test_threads_nr);
     #endif  // ifdef HYPERTHREAD
 
-    auto t_start_parallel = std::chrono::high_resolution_clock::now();
-    scansum_blelloch90(known_array_ptr_2, testnr, test_array_2, test_threads_nr);
-    auto t_stop_parallel = std::chrono::high_resolution_clock::now();
-    auto t_diff_parallel =
-      std::chrono::duration_cast<std::chrono::nanoseconds>(t_stop_parallel - t_start_parallel).count();
+        auto t_start_parallel = std::chrono::high_resolution_clock::now();
+        scansum_blelloch90(known_array_ptr_2, testnr, test_array_2, test_threads_nr);
+        auto t_stop_parallel = std::chrono::high_resolution_clock::now();
+        auto t_diff_parallel =
+          std::chrono::duration_cast<std::chrono::timegran>(t_stop_parallel - t_start_parallel).count();
 
-    std::cout << test_array_2[testnr - 1] << std::endl;
+        std::cout << test_array_2[testnr - 1] << std::endl;
 
-    delete[] known_array_ptr_2;
-    delete[] test_array_2;
+        delete[] known_array_ptr_2;
+        delete[] test_array_2;
 
-    auto speedup = ((double)t_diff_serial / (double)t_diff_parallel);
+        auto speedup = ((double)t_diff_serial / (double)t_diff_parallel);
 
-    std::cout << "SERIAL TIME:" << t_diff_serial << std::endl;
-    std::cout << "SPEEDUP:" << speedup << std::endl;
-    std::cout << "THREADS:" << test_threads_nr << std::endl;
+        std::cout << "SERIAL TIME:" << t_diff_serial << std::endl;
+        std::cout << "SPEEDUP:" << speedup << std::endl;
+        std::cout << "THREADS:" << test_threads_nr << std::endl;
 
 #endif  // ifdef TIMEPROF_TIMECALLS
 
 #ifndef TIMEPROF_TIMECALLS
-    scansum_blelloch90(known_array_ptr, testnr, test_array, 4);
-    //scansum_serial(known_array_ptr, testnr, test_array);
-    std::cout << test_array[testnr - 1] << std::endl;
+        scansum_blelloch90(known_array_ptr, testnr, test_array, 4);
+        //scansum_serial(known_array_ptr, testnr, test_array);
+        std::cout << test_array[testnr - 1] << std::endl;
 
-    delete[] known_array_ptr;
-    delete[] test_array;
+        delete[] known_array_ptr;
+        delete[] test_array;
 #endif  // ifndef TIMEPROF_TIMECALLS
-}
+    }

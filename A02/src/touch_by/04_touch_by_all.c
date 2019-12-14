@@ -99,9 +99,9 @@ int main(int argc, char** argv)
 #ifdef _OPENMP
         int me = omp_get_thread_num();
 #endif
-#pragma omp critical
+//#pragma omp critical
 #ifdef _OPENMP
-        printf("thread %2d is running on core %2d\n", me, get_cpu_id());
+        //printf("thread %2d is running on core %2d\n", me, get_cpu_id());
 #endif
     }
 
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
    *  -----------------------------------------------------------------------------
    */
 
-    printf("Sum is %g, process took %g of wall-clock time\n", S, tend - tstart);
+    printf("Sum is %g, process took <%g> of wall-clock time\n", S, tend - tstart);
 
 
     free(array);
