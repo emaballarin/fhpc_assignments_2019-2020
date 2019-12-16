@@ -70,6 +70,7 @@ def runacq_touchbyall(bin_name, nthreads, vector_len, isserial=None):
 
     ranproc_stout = str(ranproc.stdout.decode())
     ranproc_linesout = list(filter(None, ranproc_stout.split("\n")))
+    print(ranproc_linesout)
     clean_linesout = [ranproc_linesout[-1]]
     timesout = [
         float(clean_linesout[0]),  # Wall clock time
@@ -94,6 +95,7 @@ def runacq_prefixsum(bin_name, nthreads, vector_len, isserial=None):
 
     ranproc_stout = str(ranproc.stdout.decode())
     ranproc_linesout = list(filter(None, ranproc_stout.split("\n")))
+    print(ranproc_linesout)
     clean_linesout = [ranproc_linesout[-2], ranproc_linesout[-1]]
 
     timesout = [
