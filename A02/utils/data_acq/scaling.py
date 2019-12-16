@@ -11,8 +11,13 @@ procnum_list = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
 averaging_num = 5
 # averaging_num = 2
 probsize = 3000000000  # Do not use scientific notation
+# probsize = 3000000000  # Do not use scientific notation
 # probsize = 30  # Do not use scientific notation
 
+
+##################################################################################################
+
+print("\n\n\n\n\n\n\n")
 
 ##################################################################################################
 
@@ -35,12 +40,19 @@ for proc in procnum_list:
     tf_parallel_time.append(procrun[0])
     tf_parallel_overh.append(esf(float(tf_serial_time / procrun[0]), proc))
 
-print("\n")
-print(tf_serial_time)
-print(tf_parallel_time)
-print(tf_parallel_overh)
+print("\n\n")
+print("###########################################################################")
+print("TOUCH FIRST SUM, up to ", probsize, " numbers")
+print("Serial time: ", tf_serial_time)
+print("Parallel time vector (2 to 20 threads): ", tf_parallel_time)
+print("Parallel OVERHEAD vector (2 to 20 threads): ", tf_parallel_overh)
+print("###########################################################################")
 print("\n\n\n\n\n")
 
+
+##################################################################################################
+
+print("\n\n\n\n\n\n\n")
 
 ##################################################################################################
 
@@ -63,12 +75,19 @@ for proc in procnum_list:
     tba_parallel_time.append(procrun[0])
     tba_parallel_overh.append(esf(float(tba_serial_time / procrun[0]), proc))
 
-print("\n")
-print(tf_serial_time)
-print(tf_parallel_time)
-print(tf_parallel_overh)
+print("\n\n")
+print("###########################################################################")
+print("TOUCH BY ALL SUM, up to ", probsize, " numbers")
+print("Serial time: ", tba_serial_time)
+print("Parallel time vector (2 to 20 threads): ", tba_parallel_time)
+print("Parallel OVERHEAD vector (2 to 20 threads): ", tba_parallel_overh)
+print("###########################################################################")
 print("\n\n\n\n\n")
 
+
+##################################################################################################
+
+print("\n\n\n\n\n\n\n")
 
 ##################################################################################################
 
@@ -77,7 +96,7 @@ print("\n\n\n\n\n")
 
 psum_xaxis = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-psum_serial_run = acqavg(averaging_num, runacq_prefixsum, "psum.x", 1, probsize, True)
+psum_serial_run = acqavg(averaging_num, runacq_prefixsum, "psum.x", 2, probsize, True)
 psum_serial_time = psum_serial_run[0]
 
 psum_parallel_time = []
@@ -87,8 +106,11 @@ for proc in procnum_list:
     psum_parallel_time.append(procrun[1])
     psum_parallel_overh.append(esf(float(psum_serial_time / procrun[1]), proc))
 
-print("\n")
-print(tf_serial_time)
-print(tf_parallel_time)
-print(tf_parallel_overh)
+print("\n\n")
+print("###########################################################################")
+print("PREFIX SUM, up to ", probsize, " numbers")
+print("Serial time: ", psum_serial_time)
+print("Parallel time vector (2 to 20 threads): ", psum_parallel_time)
+print("Parallel OVERHEAD vector (2 to 20 threads): ", psum_parallel_overh)
+print("###########################################################################")
 print("\n\n\n\n\n")
