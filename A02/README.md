@@ -237,17 +237,17 @@ This findings are in line with theoretical predictions formulated in the previou
 
 In this second section, we will describe the problem of the *prefix (inclusive) sum* as a typical *linear (inclusive) scan* problem. Space will be given to problem description and its algorithmic challenges with regards to parallelization, the main implementation details for both the serial and the parallel version, and some methodological considerations with regards to performance optimization. Runtime data related to timings, speedups and *e.s.f.* as a measure for *parallel overhead* are also provided and commented.
 
-### 1.1 - Problem description
+### 2.1 - Problem description
 
 A problem description, from both a mathematical and a *computer-science-theoretical* point of view is given in the following.
 
-#### 1.1.1 - Mathematical problem statement
+#### 2.1.1 - Mathematical problem statement
 
 An *inclusive scan*, given a binary right-associative operator $\otimes$, is a well-posed logical/mathematical operation when defined at most over the space of variable (but nonnegative integer, finite) length vectors (of any dimension $n$),$\ V^n$ , such that ${\otimes}$ is well-defined between any two elements of $V^n$.  Being $V^n$ such vector space satisfying the well-posedness hypothesis for the $\otimes$-scan, and being  $[x_0, x_1, \dots, x_{n-1}] \in V^n$, such definition holds: ${Scan_{\otimes}}([x_0, x_1, \dots, x_{n-1}]) \ = \ {\left[ x_0, \left(x_0\otimes x_1\right),\ldots,\left(x_0 \otimes x_1\otimes\ldots\otimes x_{n-1}\right)\right]}$.
 
 In the particular case in which $\otimes := +$, the operation is called *prefix (inclusive) sum*.
 
-#### 1.1.2 - *Computer-science-theoretical* implications
+#### 2.1.2 - *Computer-science-theoretical* implications
 
 Such kind of general patterns, for different kinds of specific operators and adequate vector spaces, constitute an important part of the *algorithmic toolbox* required in many different areas at the heart of computer science and modern software engineering.
 
@@ -262,15 +262,15 @@ The number of operations performed is thus given by $n-1$ for any vector of leng
 
 What constitutes one of the main advantages of *scan* algorithms (dubbed also, indeed, *linear scan* algorithms), however, can represent their curse, especially when trying to parallelize their execution. In fact, in order to compute the output of the $i$-th iteration of the algorithm the knowledge of the output of the $i-1$-th is always required, thus making *loop-parallelization* totally ineffective in such cases.
 
-### 1.2 - Algorithmic design choices and optimization methodology
+### 2.2 - Algorithmic design choices and optimization methodology
 
 We implemented, as requested, both a serial and a parallel version of the *prefix sum*. The specific instances of the algorithms adopted in the analysis that follows are outlined below.
 
-#### 1.2.1 - Serial algorithm: not a matter of choice
+#### 2.2.1 - Serial algorithm: not a matter of choice
 
 As far as the serial implementation is concerned, we opted for a standard *loop-based* state-sequential algorithm. The number of operations required is the same as the theoretical lower bound, making impossible other algorithmic optimizations.
 
-#### 1.2.2 - Parallel algorithm: *Prefix sum*s for the *Real World*
+#### 2.2.2 - Parallel algorithm: *Prefix sum*s for the *Real World*
 
 Being the parallel implementation of the *prefix sum* to be performed according to the *shared memory* paradigm, the obvious algorithmic choice in such case has been the *Blelloch Scan Algorithm*, as outlined in the acclaimed 1993 publication *Prefix Sums and Their Applications* by Prof. Guy E. Blelloch.
 
@@ -288,7 +288,7 @@ The last point of the algorithm can be reformulated as:
 -   The *scan* of such *service array* is performed serially (or, if reasonable, with an adequate number of threads, by recursion),
 -   The $i$-th element of the output of such *scan* is summed to every element of the $i$-th subarray, in according to order.
 
-#### 1.2.3 - Choosing the right metric to optimize
+#### 2.2.3 - Choosing the right metric to optimize
 
 After having determined which algorithm to implement, we are left with the task of converting such algorithm into code. Here is where all the *real world*, code-related, optimizations come into place – and this is what at the end makes the difference.
 
@@ -306,15 +306,15 @@ In our case, we organized our optimization efforts following two leading princip
 
     In our specific case, no design choice for the parallel version of the code have been made before having finalized the development of the serial version of it.
 
-### 1.3 - Actual implementation details
+### 2.3 - Actual implementation details
 
 Bearing in mind the oldtime *hacker motto* according to which *source code is the ultimate manpage*, the following subsection is just an attempt at clarifying the most obscure, debatable, nonobvious parts of the code.
 
-#### 1.3.1 - Mind your language!
+#### 2.3.1 - Mind your language!
 
 The programming language of choice was *C++17*, as a way to blend the ability to memory-manage at a low level and offer a whole lot of compiler optimizations, together with high-level no-overhead constructs which are resolved at compile-time and offer better safety and/or practicality (i.e. templates, the `auto` keyword, pointer-references, …).
 
-#### 1.3.2 – General outlook & Serial implementation
+#### 2.3.2 – General outlook & Serial implementation
 
 Generally-speaking, the implementation has been kept as close to memory as possible, and as operations-parsimonious as possible. This has been done in order to reduce at minimum useless operations and to give the compiler too a *clear picture* of the execution workflow.
 
@@ -332,7 +332,7 @@ In particular:
 
 The list above includes fully the specific optimizations performed on the serial version of the code.
 
-#### 1.3.3 - Parallel implementation
+#### 2.3.3 - Parallel implementation
 
 Some relevant details of the parallel implementation of the code are the following:
 
@@ -340,18 +340,18 @@ Some relevant details of the parallel implementation of the code are the followi
 -   OpenMP-parallel code has been entirely put into a *closely-packed* `parallel section` in order to avoid *thread-spawning lags* and *split/join lags* typical of fragmented parallelism;
 -   The use of `single` thread execution (preferred to `master`) has been used only when strictly needed. The same holds true for the use of `barrier`s. 
 
-#### 1.3.4 - Some *compiler craze* and *`#pragma` magic*
+#### 2.3.4 - Some *compiler craze* and *`#pragma` magic*
 
 In order to further push-forward the performance of the code, the *Intel Compiler `icpc`* has been exploited, mainly by means of:
 
 -   A long, hand-picked compile line to enable aggressive optimizations, partial loop unrolling, and disable runtime checks in the compiled code which have already been performed at the development phase;
 -   The use of the  Intel-specific `#pragma parallel` which – if used not together with `#pragma vector`, `#pragma ivdep` or the deprecated `#pragma simd` can be used to force a particularly effective form of automatic vectorization in loops. This trick – together to clear loop writing – actually was able to produce *AVX2*-vectorized for all loops, even those with some data dependencies, with no side effect.
 
-#### 1.3.5 - Conclusive remarks
+#### 2.3.5 - Conclusive remarks
 
 Due to the aforementioned design choices, code execution times are expected to be much lower in the case of the parallel version. However, the exact anatomy of the scaling has to be obtained experimentally.
 
-### 1.4 - Experimental performance evaluation
+### 2.4 - Experimental performance evaluation
 
 For experimental performance evaluation of the serial and the parallel codes, with emphasis on the latter, the usual graphs of *runtime*, *parallel speedup* and *e.s.f.* as a measure of overhead will be shown without further ado.
 
@@ -363,21 +363,21 @@ It is important to rafrain the fact that the following graphs refer to benchmark
 
 ![](README.assets/ps_esf.png)
 
-### 1.5 - Comments and explanations
+### 2.5 - Comments and explanations
 
 From the analysis of the graphs shown above, it appears clear that the parallelization of the code, as expected, was pretty successful. Almost-linear speedup is obtained until $P=12$ and the maximum is reached at $P=14$. Afterwards, as the work-inefficiency of the *Blelloch Algorithm* (though work-efficient for the problem of *parallel* prefix sum) if compared with *serial linear search* for a high number of threads and an ever-growing *parallel overhead* determine a slight increase and a subsequent plateauing of timings and speedups. Maximum speedup (as said, for $P=14$ ) is equal to $\approx 8.5$ .
 
 A *finer* analysis of observed effects is performed below. Given the fact that the performance metrics chosen are the same as those of the *cumulative sum* described and analyzed in the previous sections, many theoretical explanations have already been given and will be omitted for the sake of brevity.
 
-#### 1.5.1 - *Toothed* behaviour of the speedup (or time) curves
+#### 2.5.1 - *Toothed* behaviour of the speedup (or time) curves
 
 The phenomenon is the same as that described in section *1.4.4* and happens for the same reasons.
 
-#### 1.5.2 - Superlinearity in scaling for $2\leq P \leq 4$
+#### 2.5.2 - Superlinearity in scaling for $2\leq P \leq 4$
 
 The effect is the consequence of the `close` default *SWthreads*/*cores* assignment interplaying with the clever Intel compiler-optimized mixing of memory/cache locality awareness by the means of both L3 cache sharing and exploitation of a/some idle memory bus(es) connected to the same socket. Such effects are not present with the use of a moderately old GCC or LLVM compiler and vanish when the number of threads/cores is $>4$.
 
-#### 1.5.3 - Overhead analysis
+#### 2.5.3 - Overhead analysis
 
 By the already explained means of *e.s.f* of the code we can analyze the trend in *parallel overhead*.
 
@@ -387,6 +387,6 @@ For values of $P>4$ the *e.s.f.* grows linearly until $P=15$ where it starts to 
 
 Such considerations also serve as an explanation to the increasing relevance of *parallel overhead* in slowing scaling for higher values of $P$.
 
-#### 1.5.4 - Early limits to scaling
+#### 2.5.4 - Early limits to scaling
 
 See beginning of this subsection.
