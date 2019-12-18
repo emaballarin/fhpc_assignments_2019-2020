@@ -104,7 +104,7 @@ int main(int argc, char** argv)
     for (int ii = 0; ii < N; ii++)
         array[ii] = (double)ii;  // choose the initialization you prefer;
     //array[ii] = drand48();                                // the first one (with integers) makes it
-    // to check the result
+    // easy to check the result
 
 
     /*  -----------------------------------------------------------------------------
@@ -162,11 +162,11 @@ int main(int argc, char** argv)
     //            "<%g> sec of min thread-time\n",
     //            S, tend - tstart, th_avg_time / nthreads, th_min_time);
 
-//     printf("%g SUM\n\n\n"
-//            "%g WALL\n"
-//            "%g THAVG\n"
-//            "%g THMIN\n",
-//            S, tend - tstart, th_avg_time / nthreads, th_min_time);
+    //     printf("%g SUM\n\n\n"
+    //            "%g WALL\n"
+    //            "%g THAVG\n"
+    //            "%g THMIN\n",
+    //            S, tend - tstart, th_avg_time / nthreads, th_min_time);
 
     printf("%g SUM\n\n\n"
            "%g\n"   // Wall time
